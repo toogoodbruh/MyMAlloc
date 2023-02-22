@@ -11,10 +11,14 @@ void *mymalloc(size_t size, char *file, int line){
     size_t headerSize = sizeof(size_t) + sizeof(char); //header includes size of chunk (short) and allocation status (char)
     struct metadata { //linked list to keep track of block
         int free; //flag for identifying if block is free or not
-        int size_t; //size of block
+        int blockSize; //size of block
         struct metadata *next; //pointer to next block containing meta data
     };
 
+    if (size >= MEMSIZE) { // || (block.blockSize + size) > MEMSIZE
+        //write error to file
+        return NULL;
+    }
     //initialize first chunk if not yet initialized
     if(pMem[0]==0){
         pMem[0] = MEMSIZE-headerSize; //size of first chunk is whole array minus header size
