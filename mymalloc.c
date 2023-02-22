@@ -25,7 +25,8 @@ void *mymalloc(size_t size, char *file, int line){
         return NULL;
     }
     
-    printf("%ld",pMem[0]); //test
+    printf("%d",pMem[0]); //test
+    return &memory[0];
 }
 
 void myfree(void *ptr, char *file, int line){
