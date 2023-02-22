@@ -4,6 +4,6 @@
 
 int main(int argc, char **argv)
 {
-    malloc(100);
+    malloc(4095); //test
     return EXIT_SUCCESS;
 }
