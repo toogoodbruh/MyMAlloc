@@ -9,10 +9,10 @@ static char memory[MEMSIZE];
 void *mymalloc(size_t size, char *file, int line){
     size_t *pMem = (size_t *)memory; //use pMem to write numbers in memory
     size_t headerSize = sizeof(size_t) + sizeof(char); //header includes size of chunk (short) and allocation status (char)
-    struct metadata { //linked list to keep track of chunks
-        int free;
-        int size_t;
-        struct metadata *next;
+    struct metadata { //linked list to keep track of block
+        int free; //flag for identifying if block is free or not
+        int size_t; //size of block
+        struct metadata *next; //pointer to next block containing meta data
     };
 
     //initialize first chunk if not yet initialized
