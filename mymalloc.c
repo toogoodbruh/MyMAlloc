@@ -7,14 +7,24 @@
 static char memory[MEMSIZE];
 
 void *mymalloc(size_t size, char *file, int line){
-    int *p = (int *)memory; //use p to write in memory with integers
-    if(p[0]==0){
-        p[0] = MEMSIZE-sizeof(int *)-1; //size of first chunk is whole array minus header size
-        //figure out how to write 0 and 1 (not allocated vs allocated) here
+    unsigned short *shortMem = (unsigned short *)memory; //use shortMem to write shorts in memory
+    unsigned char headerSize = sizeof(short) + sizeof(char); //header includes size of chunk (short) and allocation status (char)
+    
+    //initialize first chunk if not yet initialized
+    if(shortMem[0]==0){
+        shortMem[0] = MEMSIZE-headerSize; //size of first chunk is whole array minus header size
     }
-    printf("%d\n",p[0]); //test initialization
+    
+    printf("%d\n",shortMem[0]); //test initialization
 }
 
 void myfree(void *ptr, char *file, int line){
+    unsigned short *shortMem = (unsigned short *)memory; //use shortMem to write shorts in memory
+    unsigned char headerSize = sizeof(short) + sizeof(char); //header includes size of chunk (short) and allocation status (char)
+    
+    //initialize first chunk if not yet initialized
+    if(shortMem[0]==0){
+        shortMem[0] = MEMSIZE-headerSize; //size of first chunk is whole array minus header size
+    }
 
 }
