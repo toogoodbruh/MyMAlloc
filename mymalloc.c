@@ -15,13 +15,14 @@ void *mymalloc(size_t size, char *file, int line){
         struct metadata *next; //pointer to next block containing meta data
     };
 
-    if (size >= MEMSIZE) { // || (block.blockSize + size) > MEMSIZE
-        //write error to file
-        return NULL;
-    }
     //initialize first chunk if not yet initialized
     if(pMem[0]==0){
         pMem[0] = MEMSIZE-headerSize; //size of first chunk is whole array minus header size
+    }
+    
+    if (size >= MEMSIZE) { // || (block->blockSize + size) > MEMSIZE
+        //write error to file
+        return NULL;
     }
     
     printf("%ld",pMem[0]); //test
