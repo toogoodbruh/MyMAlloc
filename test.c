@@ -21,9 +21,8 @@ int main(int argc, char **argv)
     size_t *b = malloc(2950);
     //malloc(0);
     size_t *c = malloc(801);
-    free(a);
-    free(b);
-    free(q);
+    free(p);
+    free(p);
     //size_t *z = malloc(60);
     //size_t *y = malloc(5);
     //free(q); //test repeated freeing
