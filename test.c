@@ -4,6 +4,16 @@
 
 int main(int argc, char **argv)
 {
-    malloc(4095); //test
+    malloc(200);
+    malloc(5000);
+    size_t *p = malloc(10);
+    size_t *f = malloc(3000);
+    malloc(0);
+    malloc(801);
+    free(p);
+    free(p);
+    free(p+1);
+    free(&p);
+    malloc(101);
     return EXIT_SUCCESS;
 }
