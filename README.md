@@ -1,13 +1,13 @@
 # MyMalloc
 
-Maylin Horchler: mah423\n
+Maylin Horchler: mah423\
 Gabe Nydick: grn22
 
 MyMalloc guarantees 4-byte alignment. The memory array is defined using type size_t. MEMSIZE is currently defined to be 4096 divided by the size of size_t. The metadata for each chunk is 8 bytes. 4 bytes are used to store the size of the chunk and 4 bytes are used to store the chunk's allocation indicator (0 if not allocated, 1 if allocated).
 
 mymalloc() and myfree() are implemented as described in the assignment instructions. All chunk sizes are multiples of 4. Freed chunks are immediately coalesced if applicable. Memory allocations of size 0 are not allowed and will result in an error message.
 
-Every error message starts with "Error in <\filename>, line <#>: <\Error \Message>", where <\filename> is replaced with the name of the file from which the error-causing call to mymalloc occurred, <#> is replaced with the line number on which the error-causing call to mymalloc occurred, and <\Error \Message> is replaced with any of the following error messages:
+Every error message starts with "Error in < filename >, line <#>: < Error Message >", where < filename > is replaced with the name of the file from which the error-causing call to mymalloc occurred, <#> is replaced with the line number on which the error-causing call to mymalloc occurred, and < Error Message > is replaced with any of the following error messages:
 
 1. "Allocation of 0 bytes is not allowed."
         Occurs when an attempt to allocate 0 bytes of memory is made.
