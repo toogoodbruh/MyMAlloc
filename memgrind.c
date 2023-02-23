@@ -4,37 +4,33 @@
 #include <sys/time.h>
 #include "mymalloc.h"
 
-
 int main(int argc, char **argv)
 {
-    int outerLim = 1;
+    int outerLim = 50;
     int innerLim = 120;
     struct timeval tv;
     gettimeofday(&tv, NULL);
     srand(tv.tv_sec);
     int randInt;
-    int i, j, k = 0;
+    int i, j;
     char *p;
     double endTime, startTime;
     struct timeval start, end;
     gettimeofday(&start, NULL);
-    for (int i = 0; i < outerLim; i++){ //run test 50 times
+    for (int i = 0; i < outerLim; i++){ //performance test 1
         for (j = 0; j < innerLim; j++){ //allocate a chunk of size 1 byte, free immediately after
             p = malloc(sizeof(char));
-            //printf("\n%d\n", *p);
             free(p);
         }
     }
     gettimeofday(&end, NULL);
     endTime = ((end.tv_sec * 1000 + end.tv_sec/1e6) - (start.tv_sec *1000 + start.tv_usec/1e6)) / 50;
-    printf("\nAllocating and immediately freeing 1 byte chunks took %f microseconds\n", endTime);
-
-///////////////////////////////////////////////////////////////////
+    printf("\n(Test 1) Allocating and immediately freeing 1 byte chunks took %f microseconds\n", endTime);
 
     struct timeval start2, end2;
     char *arr [innerLim];
     gettimeofday(&start2, NULL); //get start time
-    for (i = 0; i < outerLim; i++){ // run test 50 times
+    for (i = 0; i < outerLim; i++){ // performance test 2
         for (j = 0; j < innerLim; j++){ //allocate chuck of size 1 byte, store pointers in an arry
             p = malloc(sizeof(char));
             arr[j] = p;
@@ -47,44 +43,51 @@ int main(int argc, char **argv)
     }
     gettimeofday(&end2, NULL); //get end time
     endTime = ((end2.tv_sec * 1000 + end2.tv_sec/1e6) - (start2.tv_sec *1000 + start2.tv_usec/1e6)) / 50;
-    printf("\nAllocating %d chunks, freeing them after finishing allocation took %f microseconds\n", innerLim, endTime);
+    printf("\n(Test 2) Allocating %d chunks, freeing them after finishing allocation took %f microseconds\n", innerLim, endTime);
     
     struct timeval start3, end3;
-    int randIndex;
     char *arr2[innerLim];
     gettimeofday(&start3, NULL);
-    for (i = 0; i < outerLim; i++){ 
-        int mallocCalls = 0, freeCount = 0;
+    for (i = 0; i < outerLim; i++){ //performance test 3
+        int mallocCalls = 0, freeCount = 0; 
         while (mallocCalls < innerLim){
-            randInt = rand() % 100 + 1;
+            randInt = rand() % 100 + 1; //random integer 
             if (randInt <= 50) {
                 p = malloc(sizeof(char));
                 arr2[mallocCalls] = p;
-                //printf("\nmallocCalls: %d line: %d\n", mallocCalls, __LINE__);
                 mallocCalls++;
-            } else if (freeCount < mallocCalls){
-                /*p = malloc(sizeof(char));
-                arr2[mallocCalls] = p;
-                printf("\nmallocCalls: %d line: %d\n", mallocCalls, __LINE__);
-                mallocCalls++;
-                */
-                free(arr2[freeCount]);
-                //printf("\nfreeCount: %d line: %d\n", freeCount, __LINE__);
-                freeCount++;
-               
+            } else if (freeCount < mallocCalls){ //if randInt >50 
+                free(arr2[freeCount]); //free at index freeCount
+                freeCount++;    
             }
         }
-        //arr2[innerLim-1] = "a";
-        printf("\nfreeCount after while: %d line: %d\n", freeCount, __LINE__);
-        while(freeCount < innerLim) {
-            printf("\n%d\n", freeCount);
+        while(freeCount < innerLim) { //loop ensures the remaining pointers in the array are deallocated
             free(arr2[freeCount]);
             freeCount++;
         }
     }
     gettimeofday(&end3, NULL);
     endTime = ((end3.tv_sec * 1000 + end3.tv_sec/1e6) - (start3.tv_sec *1000 + start3.tv_usec/1e6)) / 50;
-    printf("\nRandomly allocating and freeing chunks of data, calling malloc %d times took %f microseconds\n", innerLim, endTime);
+    printf("\n(Test 3) Randomly allocating and freeing chunks of data, calling malloc %d times took %f microseconds\n", innerLim, endTime);
 
+    struct timeval start4, end4;
+    char *arr3[innerLim];
+    int pSize = 4000;
+    gettimeofday(&start4, NULL);
+    for (i = 0; i < outerLim; i++){ //test 4
+        for (j = 0; j < innerLim; j++){
+            //randInt = (int)(rand() % 10 + 1);
+            p = malloc(pSize);
+            for(int k = 0; k < pSize; k++){
+                p[k] = k ^ 5;
+            }
+            //if (p != NULL || p != 0) {
+                free(p);
+            //}
+        }
+    }
+    gettimeofday(&end4, NULL);
+    endTime = ((end4.tv_sec * 1000 + end4.tv_sec/1e6) - (start4.tv_sec *1000 + start4.tv_usec/1e6)) / 50;
+    printf("\n(Test 4) Randomly allocating and freeing chunks of data of size 4000, calling malloc %d times took %f microseconds\n", innerLim, endTime);
     return EXIT_SUCCESS;
 }
