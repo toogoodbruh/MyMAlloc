@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include "mymalloc.h"
 
+#define MEMSIZE     4096
+#define HEADSIZE    8
+#define ALIGNMENT   4
+
 void printA(size_t *p){
     //iterate through chunks in memory
     size_t *pMem = p;
@@ -12,24 +16,132 @@ void printA(size_t *p){
     }
 }
 
+void printB(char *p){
+    //iterate through chunks in memory
+    char *pMem = p;
+    int count = 1;
+    int size = 0;
+    while(p < pMem + MEMSIZE && count<75){
+        if(p[ALIGNMENT]==1){
+            size+=p[0]*ALIGNMENT;
+        }
+        printf("\n\n%d\nSize: %d\nAllocation Status: %d\nAddress: %d",count,p[0]*ALIGNMENT,p[ALIGNMENT],p);
+        //iterate to next chunk
+        p = p + HEADSIZE + p[0]*ALIGNMENT;
+        count++;
+    }
+    printf("\n\nSize: %d",size+HEADSIZE*50);
+}
+
+void printC(char *p[], int size){
+    printf("hi");
+    for(int i = 0; i<size; i++){
+        char *q = p[i]-HEADSIZE;
+        printf("\n\n%d\nSize: %d\nAllocation Status: %d\nAddress: %d",i+1,q[0]*ALIGNMENT,q[ALIGNMENT],q);
+    }
+}
+
+int allocateZero(){
+    //try to allocate a chunk of 0 bytes
+    char *p = malloc(0); //should produce error message, test.c line 21
+    if(p!=NULL){
+        return 1;
+    }
+    return 0;
+}
+
+int allocateLargeMemory(){
+    int errors = 0;
+
+    //try to allocate more memory than total memory
+    char *p = malloc(MEMSIZE+1); //should produce error message, test.c line 32
+    if(p!=NULL){
+        errors+=1;
+    }
+    //try to allocate more than total memory minus header size
+    char *q = malloc(MEMSIZE-HEADSIZE+1); //should produce error message, test.c line 37
+    if(q!=NULL){
+        errors+=1;
+    }
+
+    return errors;
+}
+
+int overlapCheck(char *p, char *q){
+    //check if two chunks overlap
+    if(p + HEADSIZE + p[0]*ALIGNMENT > q){
+        return 1;
+    }
+    return 0;
+}
+
+int addressDivBy4(char *head, char *p){
+    //check if address is divisble by 4
+    if((p-head) % 4 != 0){
+        return 1;
+    }
+    return 0;
+}
+
+int chunkLocCheck(char *head, char *p){
+    //check to see if chunk is outside of allocated memory
+    if(p<head || p>head+MEMSIZE){
+        return 1;
+    }
+    return 0;
+}
+
+int freeOutsideMem(char *head){
+    free(head-HEADSIZE-1); //should produce error message, test.c line 69
+    free(head+MEMSIZE+1); //should produce error message, test.c line 70
+}
+
+int freeNonChunk(char *p){
+    int x = ((rand() % 6) * 2) + 1; //make x a random odd integer from 1 through 10
+    free(p+x); // should produce error message, test.c line 76
+}
+
+int freeTwice(char *p){
+    free(p);
+    free(p); //should produce error message, test.c line 81
+}
+
 int main(int argc, char **argv)
 {
+    /*
     size_t *p = malloc(200);
-    //size_t *a = malloc(5000); //test bigger chunk than mem
-    size_t *a = malloc(50);
-    size_t *q = malloc(10);
-    size_t *b = malloc(2950);
-    //malloc(0);
-    size_t *c = malloc(801);
     free(p);
-    free(p);
-    //size_t *z = malloc(60);
-    //size_t *y = malloc(5);
-    //free(q); //test repeated freeing
-    //free(q+1); //test freeing non chunk address
-    //free(&q); //test freeing outside of mem address
-    //malloc(101);
     printA(p-2);
+    */
+
+    //size_t *z = malloc(1);
+    //printB((char *)z-HEADSIZE);
+
+
+    allocateZero(); //error message
+    allocateLargeMemory(); //error message
+   
+
+    int numChunks = 49;
+    char *chunks[numChunks+1];
+    for(int i=0; i<numChunks; i++){
+        int s = (rand() % 64) + 1; //generate random chunk size from 1 through 64
+        chunks[i] = malloc(s);
+    }
+
+    int minAlloc = 49*(HEADSIZE+ALIGNMENT); //minimum allocated memory after random generation
+    char *p = malloc(MEMSIZE-minAlloc); //chunk size too big error message, test.c line 103
+    allocateZero(); //error message
+
+    /*
+    char *lastChunk = chunks[numChunks-1] - HEADSIZE; //second to last chunk
+    printf("\n\nsecond last chunk size:%d\n\n",lastChunk[0]*ALIGNMENT);
+    lastChunk = lastChunk + HEADSIZE + lastChunk[0]*ALIGNMENT; //get pointer to last chunk
+    chunks[numChunks] = malloc(lastChunk[0]*ALIGNMENT); //allocate last chunk
+    */
+
+    printB(chunks[0]-HEADSIZE);
+    //printC(chunks,numChunks+1);
 
     //try to allocate 0
     //try to allocate bigger than memory
@@ -44,7 +156,6 @@ int main(int argc, char **argv)
     //free just 1 char outside memory on both sides of memory
     //try to free addresses outside of chunks
     //then free first chunk, last chunk and any middle chunk; save sizes
-    //free just 1 char outside memory on both sides of memory
     //try to free addresses outside of chunks
     //reallocate chunks in 2 half size chunks (unless they are size 1, then reallocate as itself)
     //free memory in random order
