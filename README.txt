@@ -1,5 +1,3 @@
-# MyMalloc
-
 Maylin Horchler, Gabe Nydick
 mah423, grn22
 
