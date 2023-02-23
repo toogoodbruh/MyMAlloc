@@ -36,7 +36,7 @@ MyMalloc must:
 8. Coalesce adjacent free chunks upon freeing any chunk where possible
 9. Report errors in the appropriate format when they occur
 10. Not require an initialize function before using other functions in the library
-11. Pass performance tests to ensure time and space efficiency.
+11. Pass performance tests to ensure time and space efficiency
 
 ### Test Program Descriptions
 

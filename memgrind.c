@@ -89,6 +89,9 @@ int main(int argc, char **argv)
     endTime = ((end4.tv_sec * 1000 + end4.tv_sec/1e6) - (start4.tv_sec *1000 + start4.tv_usec/1e6)) / 50;
     printf("\n(Test 4) Allocating and freeing chunks of data of size 4000, calling malloc %d times took %f microseconds\n", innerLim, endTime);
 
+    //fill entire memory with 1-byte chunks until full, then free backwards, then 2-byte chunks, etc.
+    //all the way until reach max size of chunks
+    //then repeat 50 times :D
     struct timeval start5, end5;
     char *arr3[innerLim];
     int chunkSize = sizeof(char) ;
