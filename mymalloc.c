@@ -72,14 +72,27 @@ void myfree(void *ptr, char *file, int line){
 
     //search for matching chunk
     size_t *c = pMem; //store chunk iterator here
+    size_t *cPrev = NULL; //store chunk previous to iterator here
 
     //iterate through chunks in memory
     while(c < pMem + MEMSIZE){
         //if given pointer points to current chunk
         if(c+headerSize==ptr){
-            //if chunk is allocated, de-allocate
+            //if chunk is allocated, de-allocate & coalesce
             if(c[1]==1){
                 c[1] = 0; //mark chunk as de-allocated
+
+                //coalesce
+                size_t *cNext = c + c[0] + headerSize; //get next chunk
+                //if next chunk is not allocated, coalesce
+                if(cNext[1]==0){
+                    c[0] = c[0] + headerSize + cNext[0]; //add next chunk size to current chunk
+                }
+
+                //if previous chunk is not allocated, coalesce
+                if(cPrev[1]==0){
+                    cPrev[0] = cPrev[0] + headerSize + c[0]; //add current chunk to previous chunk
+                }
                 return;
             }
             //otherwise, print error message and return
@@ -88,8 +101,8 @@ void myfree(void *ptr, char *file, int line){
                 return;
             }
         }
-        //iterate to next chunk
-        c = c + c[0] + headerSize;
+        cPrev = c; //store this chunk in cPrev
+        c = c + c[0] + headerSize; //iterate to next chunk
     }
     //chunk not found - address is not from start of chunk
     printf("Error in %s, line %d: Invalid address - this address is not the start of a chunk.\n",file,line);
