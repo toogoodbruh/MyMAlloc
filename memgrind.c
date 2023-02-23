@@ -10,7 +10,8 @@ int main(int argc, char **argv)
     int outerLim = 1;
     int innerLim = 120;
     struct timeval tv;
-    //srand(utimes(NULL));
+    gettimeofday(&tv, NULL);
+    srand(tv.tv_sec);
     int randInt;
     int i, j, k = 0;
     char *p;
@@ -55,31 +56,29 @@ int main(int argc, char **argv)
     for (i = 0; i < outerLim; i++){ 
         int mallocCalls = 0, freeCount = 0;
         while (mallocCalls < innerLim){
-            randInt = rand() % 10 + 1;
-            if (randInt <= 5) {
+            randInt = rand() % 100 + 1;
+            if (randInt <= 50) {
                 p = malloc(sizeof(char));
                 arr2[mallocCalls] = p;
                 //printf("\nmallocCalls: %d line: %d\n", mallocCalls, __LINE__);
                 mallocCalls++;
-            } else if (freeCount >= mallocCalls){
+            } else if (freeCount < mallocCalls){
                 /*p = malloc(sizeof(char));
                 arr2[mallocCalls] = p;
                 printf("\nmallocCalls: %d line: %d\n", mallocCalls, __LINE__);
                 mallocCalls++;
                 */
-               int x = 0;
-               
-            } else {
                 free(arr2[freeCount]);
                 //printf("\nfreeCount: %d line: %d\n", freeCount, __LINE__);
                 freeCount++;
+               
             }
         }
         //arr2[innerLim-1] = "a";
         printf("\nfreeCount after while: %d line: %d\n", freeCount, __LINE__);
         while(freeCount < innerLim) {
             printf("\n%d\n", freeCount);
-            free(arr[freeCount]);
+            free(arr2[freeCount]);
             freeCount++;
         }
     }
