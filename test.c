@@ -6,41 +6,6 @@
 #define HEADSIZE    8
 #define ALIGNMENT   4
 
-void printA(size_t *p){
-    //iterate through chunks in memory
-    size_t *pMem = p;
-    while(p < pMem + (4096/sizeof(size_t))){
-        printf("\n\nSize: %d\nAllocation Status: %d\nAddress: %d",p[0]*4,p[1],p);
-        //iterate to next chunk
-        p = p + p[0] + 2;
-    }
-}
-
-void printB(char *p){
-    //iterate through chunks in memory
-    char *pMem = p;
-    int count = 1;
-    int size = 0;
-    while(p < pMem + MEMSIZE && count<75){
-        if(p[ALIGNMENT]==1){
-            size+=p[0]*ALIGNMENT;
-        }
-        printf("\n\n%d\nSize: %d\nAllocation Status: %d\nAddress: %d",count,p[0]*ALIGNMENT,p[ALIGNMENT],p);
-        //iterate to next chunk
-        p = p + HEADSIZE + p[0]*ALIGNMENT;
-        count++;
-    }
-    printf("\n\nSize: %d",size+HEADSIZE*50);
-}
-
-void printC(char *p[], int size){
-    printf("hi");
-    for(int i = 0; i<size; i++){
-        char *q = p[i]-HEADSIZE;
-        printf("\n\n%d\nSize: %d\nAllocation Status: %d\nAddress: %d",i+1,q[0]*ALIGNMENT,q[ALIGNMENT],q);
-    }
-}
-
 int allocateZero(){
     //try to allocate a chunk of 0 bytes
     char *p = malloc(0); //should produce error message, test.c line 21
@@ -108,69 +73,82 @@ int freeTwice(char *p){
 
 int main(int argc, char **argv)
 {
-    /*
-    size_t *p = malloc(200);
-    free(p);
-    printA(p-2);
-    */
+    int numErrors = 0; //store number of times mymalloc fails correctness tests
 
-    //size_t *z = malloc(1);
-    //printB((char *)z-HEADSIZE);
+    printf("ALLOCATION ERROR TESTING\n\n");
 
+    numErrors+=allocateZero(); //error message
+    numErrors+=allocateLargeMemory(); //error messages
 
-    allocateZero(); //error message
-    allocateLargeMemory(); //error message
-   
-
-    int numChunks = 49;
-    char *chunks[numChunks+1];
+    int numChunks = 50; //number of randomly generated chunks
+    char *chunks[numChunks+1]; //store pointers here
+    int totalSize = 0; //store total memory allocated here
     for(int i=0; i<numChunks; i++){
         int s = (rand() % 64) + 1; //generate random chunk size from 1 through 64
+
+        int remainder = s % 4;
+        if(remainder!=0){
+            totalSize+=s+4-remainder+HEADSIZE;
+        }
+        else{
+            totalSize+=s+HEADSIZE;
+        }
+
         chunks[i] = malloc(s);
     }
 
-    int minAlloc = 49*(HEADSIZE+ALIGNMENT); //minimum allocated memory after random generation
-    char *p = malloc(MEMSIZE-minAlloc); //chunk size too big error message, test.c line 103
-    allocateZero(); //error message
+    int minAlloc = 50*(HEADSIZE+ALIGNMENT); //minimum allocated memory after random generation
+    char *p = malloc(MEMSIZE-minAlloc); //chunk size too big error message, test.c line 107
+    if(p!=NULL){
+        numErrors+=1;
+    }
+    numErrors+=allocateZero(); //error message
 
-    /*
-    char *lastChunk = chunks[numChunks-1] - HEADSIZE; //second to last chunk
-    printf("\n\nsecond last chunk size:%d\n\n",lastChunk[0]*ALIGNMENT);
-    lastChunk = lastChunk + HEADSIZE + lastChunk[0]*ALIGNMENT; //get pointer to last chunk
-    chunks[numChunks] = malloc(lastChunk[0]*ALIGNMENT); //allocate last chunk
-    */
+    int lastChunkSize = MEMSIZE-HEADSIZE-totalSize; //get last chunk size
+    chunks[numChunks] = malloc(lastChunkSize); //allocate last chunk
 
-    printB(chunks[0]-HEADSIZE);
-    //printC(chunks,numChunks+1);
+    numErrors+=allocateLargeMemory(); //error messages
+    numErrors+=allocateZero(); //error message
+    p = malloc(1); //no memory left error message, test.c line 115. Shows that memory is full
+    if(p!=NULL){
+        numErrors+=1;
+    }
 
-    //try to allocate 0
-    //try to allocate bigger than memory
-    //randomly fill array with 49 chunks of size 10 up to size 64
-    //try to make chunk bigger than remaining chunk
-    //try to allocate 0
-    //then make a final chunk filling the rest of the array
-    //try to allocate 0
-    //try to allocate bigger than memory
-    //prove no chunks overlap, all addresses are divisible by 4, and that no chunks go outside allocated memory
-    //above also proves part 6
-    //free just 1 char outside memory on both sides of memory
-    //try to free addresses outside of chunks
-    //then free first chunk, last chunk and any middle chunk; save sizes
-    //try to free addresses outside of chunks
-    //reallocate chunks in 2 half size chunks (unless they are size 1, then reallocate as itself)
-    //free memory in random order
-    //free twice each time to show that error checking works
-    //between each free, check that no adjacent chunks are unallocated, proper chunk is unallocated
-    //this proves that allocation was proper in first place
-    //every 5 chunks freed, allocate new memory of size 3 in new array
-    //free entire array except one
-    //allocate a chunk for one third of memory size
-    //free last one and last chunk
-    //allocate a chunk for whole memory
-    //free
-    //start over without reinitializing, repeat 10 times
+    //prove no chunks overlap
+    for(int i = 0; i<numChunks-1; i++){
+        numErrors+=overlapCheck(chunks[i],chunks[i+1]);
+    }
 
-    //also note - finish memgrind 4 & 5 (& clean)
+    //prove memory addresses are multiples of 4 and that no chunks are located outside of memory
+    for(int i = 0; i<numChunks; i++){
+        numErrors+=addressDivBy4(chunks[0],chunks[i]);
+        numErrors+=chunkLocCheck(chunks[0],chunks[i]);
+    }
+
+    printf("\n\nFREE ERROR TESTING\n\n");
+    freeOutsideMem(chunks[0]); //try freeing outside of allocated memory
+    //show numChunks examples of trying to free a non-chunk
+    for(int i = 0; i<numChunks; i++){
+        freeNonChunk(chunks[0]); //numChunks error messages
+    }
+    
+    printf("\n\nNATURAL ERRORS FROM RANDOM FREEING TEST\n\n");
+    free(chunks[0]); //free first chunk
+    free(chunks[numChunks]); //free last chunk
+
+    //randomly free rest of array until one unallocated chunk is left
+    p = malloc(MEMSIZE-HEADSIZE); //error message
+    //free chunks until all chunks are free
+    while(!p){
+        int r = (rand() % (numChunks-1)) + 1; //generate random chunk size from 1 through numChunks-1
+        free(chunks[r]); //free random chunk, possible error message until successful
+        p = malloc(MEMSIZE-HEADSIZE); //error message until successful
+    }
+
+    printf("\n\nFREE MYMALLOC TWICE ERROR TEST\n\n");
+    freeTwice(p);
+
+    printf("\nNumber of Correctness Errors: %d", numErrors); //print number of correctness errors
 
     return EXIT_SUCCESS;
 }

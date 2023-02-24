@@ -40,32 +40,25 @@ MyMalloc must:
 
 ### Test Program Descriptions
 
-try to allocate 0
-try to allocate bigger than memory
-randomly fill array with 49 chunks of size 10 up to size 64
-try to make chunk bigger than remaining chunk
-try to allocate 0
-then make a final chunk filling the rest of the array
-try to allocate 0
-try to allocate bigger than memory
-prove no chunks overlap, all addresses are divisible by 4, and that no chunks go outside allocated memory
-above also proves part 6
-free just 1 char outside memory on both sides of memory
-try to free addresses outside of chunks
-then free first chunk, last chunk and any middle chunk; save sizes
-try to free addresses outside of chunks
-reallocate chunks in 2 half size chunks (unless they are size 1, then reallocate as itself)
-free memory in random order
-free twice each time to show that error checking works
-between each free, check that no adjacent chunks are unallocated, proper chunk is unallocated
-this proves that allocation was proper in first place
-every 5 chunks freed, allocate new memory of size 3 in new array
-free entire array except one
-allocate a chunk for one third of memory size
-free last one and last chunk
-allocate a chunk for whole memory
-free
+    //try to allocate 0
+    //try to allocate bigger than memory
+    //randomly fill array with 49 chunks of size 10 up to size 64
+    //try to make chunk bigger than remaining chunk
+    //try to allocate 0
+    //then make a final chunk filling the rest of the array
+    //try to allocate 0
+    //try to allocate bigger than memory
+    //try to allocate 1, showing malloc is full
+    //prove no chunks overlap, all addresses are divisible by 4, and that no chunks go outside allocated memory
+    //above also proves part 6
+    //free just 1 char outside memory on both sides of memory
+    //try to free addresses outside of chunks
+    //then free first & last chunk
+    //free memory in random order until whole mymalloc is free
+    //proves coalescing
+    //allocate a chunk for whole memory
+    //free
 
-start over without reinitializing, repeat 10 times
+    //also note - finish memgrind 4 & 5 (& clean)
 
 ### Design Properties Proven

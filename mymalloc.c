@@ -40,8 +40,8 @@ void *mymalloc(size_t size, char *file, int line){
         if(c[0]>=sizeNum && c[1]==0){
             c[1] = 1; //mark chunk as allocated
 
-            //only split chunk if there is no room for a new header
-            if(c[0]-sizeNum>=headerSize){
+            //only split chunk if there is room for a new header
+            if(c[0]-sizeNum>headerSize){
                 c[headerSize+sizeNum] = c[0] - sizeNum - headerSize; //update size of next chunk
                 c[0] = sizeNum; //update size of current chunk
             }
