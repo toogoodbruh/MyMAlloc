@@ -9,7 +9,7 @@
 int allocateZero(){
     //try to allocate a chunk of 0 bytes
     char *p = malloc(0); //should produce error message, test.c line 21
-    if(p!=NULL){
+    if(p){
         return 1;
     }
     return 0;
@@ -20,12 +20,12 @@ int allocateLargeMemory(){
 
     //try to allocate more memory than total memory
     char *p = malloc(MEMSIZE+1); //should produce error message, test.c line 32
-    if(p!=NULL){
+    if(p){
         errors+=1;
     }
     //try to allocate more than total memory minus header size
     char *q = malloc(MEMSIZE-HEADSIZE+1); //should produce error message, test.c line 37
-    if(q!=NULL){
+    if(q){
         errors+=1;
     }
 
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
     int minAlloc = 50*(HEADSIZE+ALIGNMENT); //minimum allocated memory after random generation
     char *p = malloc(MEMSIZE-minAlloc); //chunk size too big error message, test.c line 107
-    if(p!=NULL){
+    if(p){
         numErrors+=1;
     }
     numErrors+=allocateZero(); //error message
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
     numErrors+=allocateLargeMemory(); //error messages
     numErrors+=allocateZero(); //error message
     p = malloc(1); //no memory left error message, test.c line 115. Shows that memory is full
-    if(p!=NULL){
+    if(p){
         numErrors+=1;
     }
 

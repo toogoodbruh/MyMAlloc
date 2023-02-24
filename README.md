@@ -40,25 +40,32 @@ MyMalloc must:
 
 ### Test Program Descriptions
 
-    //try to allocate 0
-    //try to allocate bigger than memory
-    //randomly fill array with 49 chunks of size 10 up to size 64
-    //try to make chunk bigger than remaining chunk
-    //try to allocate 0
-    //then make a final chunk filling the rest of the array
-    //try to allocate 0
-    //try to allocate bigger than memory
-    //try to allocate 1, showing malloc is full
-    //prove no chunks overlap, all addresses are divisible by 4, and that no chunks go outside allocated memory
-    //above also proves part 6
-    //free just 1 char outside memory on both sides of memory
-    //try to free addresses outside of chunks
-    //then free first & last chunk
-    //free memory in random order until whole mymalloc is free
-    //proves coalescing
-    //allocate a chunk for whole memory
-    //free
+allocateZero(): tries to allocate zero
+allocateLargeMemory(): tries to allocate memory larger than mymalloc can hold
+overlapCheck(): checks that two given chunks are not overlapping
+addressDivBy4(): checks that all addresses in memory are divisible by 4
+chunkLocCheck(): checks that chunk locations are all within memory
+freeOutsideMem(): tries to free memory outside of memory allocation
+freeNonChunk(): tries to free memory not starting at a chunk
+freeTwice(): tries to free memory more than once
 
-    //also note - finish memgrind 4 & 5 (& clean)
+main(): Runs script testing design properties
+- tries to allocate 0
+- tries to allocate bigger than memory
+- randomly fills array with 49 chunks of size 10 up to size 64
+- tries to make chunk bigger than remaining chunk
+- tries to allocate 0
+- makes a final chunk filling the rest of the array
+- tries to allocate 0
+- tries to allocate bigger than memory
+- tries to allocate 1, showing malloc is full
+- proves no chunks overlap, all addresses are divisible by 4, and that no chunks go outside allocated memory
+- tries to free just 1 char outside memory on both sides of memory
+- tries to free addresses outside of chunks
+- frees first & last chunk
+- frees memory in random order until whole memory is free
+- allocates a chunk taking whole memory
+- frees chunk
 
 ### Design Properties Proven
+If there are no correctness errors found when running test.c, the design properties under Test Plan are proven.
