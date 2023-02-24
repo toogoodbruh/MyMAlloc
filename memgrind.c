@@ -124,22 +124,17 @@ int main(int argc, char **argv)
     int chunkSize = 2;
     int maxChunkSize = 16;
     gettimeofday(&start5, NULL);
-    for (int i = 0; i < outerLim; i++){ // performance test 5
-        while(chunkSize<=2){
-            for (int j = 0; j < innerLim; j++){ //allocate memory of various sizes
-                p = malloc(sizeof(int));
-                arr3[j] = p;
+    /*for (i = 0; i < outerLim; i++) {
+        for (j = 0; j < innerLim; j++){ 
+            p = malloc(sizeof(char)*2);
+            arr3[j] = p;
+            for (int k = 0; k < (sizeof(char)*2); k++) {
+                p[k] = 10;
             }
-            for (int j = 0; j < innerLim; j++) { //free all allocated chunks stored in the array
-                printf("\n%d\n",j);
-                free(arr3[j]);
-            }
-            chunkSize = chunkSize*2;
         }
-    }
-    gettimeofday(&end5, NULL);
-    endTime = ((end5.tv_sec * 1000 + end5.tv_sec/1e6) - (start5.tv_sec * 1000 + start5.tv_usec/1e6)) / outerLim;
-    printf("\n(Test 5) Allocating and freeing chunks of data of various sizes took, on average, %f microseconds\n", endTime);
-    */
+        for(j = 0; j < innerLim; j++){
+            free(arr3[j]);
+        }
+    }*/
     return EXIT_SUCCESS;
 }
