@@ -99,7 +99,6 @@ int main(int argc, char **argv)
     /*
     test 5
     Fill entire memory with 120 2-byte chunks, then free backwards
-    Repeat with 4-byte chunks, 8-byte chunks, and 16-byte chunks.
     Iterate 50 times
     */
     struct timeval start5, end5;
@@ -117,24 +116,6 @@ int main(int argc, char **argv)
     gettimeofday(&end5, NULL); //get end time
     endTime = ((end5.tv_sec * 1000 + end5.tv_sec/1e6) - (start5.tv_sec *1000 + start5.tv_usec/1e6)) / outerLim;
     printf("\n(Test 5) Allocating %d 2-byte chunks, freeing them after finishing allocation took, on average, %f microseconds\n", innerLim, endTime);
-   
-   /*
-    struct timeval start5, end5;
-    char *arr3[innerLim];
-    int chunkSize = 2;
-    int maxChunkSize = 16;
-    gettimeofday(&start5, NULL);
-    /*for (i = 0; i < outerLim; i++) {
-        for (j = 0; j < innerLim; j++){ 
-            p = malloc(sizeof(char)*2);
-            arr3[j] = p;
-            for (int k = 0; k < (sizeof(char)*2); k++) {
-                p[k] = 10;
-            }
-        }
-        for(j = 0; j < innerLim; j++){
-            free(arr3[j]);
-        }
-    }*/
+
     return EXIT_SUCCESS;
 }
