@@ -91,17 +91,21 @@ int main(int argc, char **argv)
     char *arr3[innerLim];
     int chunkSize = sizeof(char) ;
     gettimeofday(&start5, NULL);
-    /*for (i = 0; i < outerLim; i++) {
-        for (j = 0; j < innerLim; j++){ 
-            p = malloc(sizeof(char)*2);
-            arr3[j] = p;
-            for (int k = 0; k < (sizeof(char)*2); k++) {
-                p[k] = 10;
-            }
+    pSize = 400;
+    for (i = 0; i < outerLim; i++){ //test 4
+        pSize = 400;
+        for (j = 0; j < innerLim; j++){
+            pSize = pSize % 4 + 4;
+            p = malloc(pSize);
+            /*for(int k = 0; k < pSize; k++){
+                p[k] = k ^ 5;
+            }*/
+            free(p);
+            pSize++;
         }
-        for(j = 0; j < innerLim; j++){
-            free(arr3[j]);
-        }
-    }*/
+    }
+    gettimeofday(&end5, NULL);
+    endTime = ((end5.tv_sec * 1000 + end5.tv_sec/1e6) - (start5.tv_sec *1000 + start5.tv_usec/1e6)) / 50;
+    printf("\n(Test 5) Allocating and freeing chunks of data of size starting at 400, calling malloc %d times took %f microseconds\n", innerLim, endTime);
     return EXIT_SUCCESS;
 }
