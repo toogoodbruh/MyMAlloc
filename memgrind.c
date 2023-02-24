@@ -34,10 +34,8 @@ int main(int argc, char **argv)
         for (j = 0; j < innerLim; j++){ //allocate chuck of size 1 byte, store pointers in an arry
             p = malloc(sizeof(char));
             arr[j] = p;
-            //free(*p);
         }
         for (j = 0; j < innerLim; j++) { //free all allocated chunks stored in the array
-            //*p = arr[j];
             free(arr[j]);
         }
     }
@@ -75,14 +73,11 @@ int main(int argc, char **argv)
     gettimeofday(&start4, NULL);
     for (i = 0; i < outerLim; i++){ //test 4
         for (j = 0; j < innerLim; j++){
-            //randInt = (int)(rand() % 10 + 1);
             p = malloc(pSize);
             for(int k = 0; k < pSize; k++){
                 p[k] = k ^ 5;
             }
-            //if (p != NULL || p != 0) {
             free(p);
-            //}
         }
     }
     gettimeofday(&end4, NULL);
